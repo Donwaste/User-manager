@@ -2,6 +2,8 @@
 
 A single-page application built with React and Vite. It features a user directory with profession-based filtering, multi-column sorting, live search, client-side pagination, bookmarks, and a login form with real-time validation.
 
+**Live demo:** [user-manager-lyart-eta.vercel.app](https://user-manager-lyart-eta.vercel.app)
+
 ## Demo goals
 
 - Practice component decomposition and props-driven architecture
@@ -159,14 +161,18 @@ Returns an object of `{ fieldName: errorMessage }` pairs; empty object means all
 4. **Lodash ordering:** `_.orderBy` handles multi-key sort with direction — ready to extend to multi-column sorting
 5. **TextField abstraction:** Password toggle and validation error display are encapsulated inside a single component, keeping form code clean
 
-## Future Goals
-
-- **Backend:** Replace the fake API with a real **Node.js (Express)** server and a database
-- **Auth:** Wire the login form to a real authentication flow (JWT / sessions)
-- **TypeScript:** Add static typing across components, API responses, and the validator config
-- **State Management:** Lift shared state into **Redux Toolkit** or **Zustand** as the app grows
-- **Testing:** Unit tests for `Validator` and `Paginate`; component tests with React Testing Library
-
 ## License
 
 MIT — free to use and modify.
+
+## Deploy
+
+Hosted on **Vercel**. Requires a `vercel.json` in the project root to handle client-side routing correctly with `BrowserRouter`:
+
+```json
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
+}
+```
+
+Without this, direct URL access to any route other than `/` returns a 404.
