@@ -13,7 +13,7 @@ const UserPage = ({ userId }) => {
 
   useEffect(() => {
     api.users.getById(userId).then((data) => setUser(data));
-  }, [userId]);
+  }, []);
 
   if (!user) {
     return <div>Loading...</div>;

@@ -2,8 +2,17 @@ import { useState } from "react";
 
 const TextField = ({ label, type = "text", name, value, onChange, error }) => {
   const [showPassword, setShowPassword] = useState(false);
+
   const toggleShowPassword = () => {
     setShowPassword((prevState) => !prevState);
+  };
+
+  const handleChange = ({ target }) => {
+    onChange({ name: target.name, value: target.value });
+  };
+
+  const getInputClasses = () => {
+    return `form-control ${error ? "is-invalid" : ""}`;
   };
 
   return (
@@ -17,9 +26,10 @@ const TextField = ({ label, type = "text", name, value, onChange, error }) => {
           id={name}
           name={name}
           value={value}
-          onChange={onChange}
-          className={`form-control ${error ? "is-invalid" : ""} `}
+          onChange={handleChange}
+          className={getInputClasses()}
         />
+
         {type === "password" && (
           <button
             className="btn btn-outline-secondary"
@@ -29,6 +39,7 @@ const TextField = ({ label, type = "text", name, value, onChange, error }) => {
             <i className={"bi bi-eye" + (showPassword ? "-slash" : "")}></i>
           </button>
         )}
+
         {error && <div className="invalid-feedback">{error}</div>}
       </div>
     </div>

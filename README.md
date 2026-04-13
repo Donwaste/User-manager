@@ -164,15 +164,3 @@ Returns an object of `{ fieldName: errorMessage }` pairs; empty object means all
 ## License
 
 MIT — free to use and modify.
-
-## Deploy
-
-Hosted on **Vercel**. Requires a `vercel.json` in the project root to handle client-side routing correctly with `BrowserRouter`:
-
-```json
-{
-  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
-}
-```
-
-Without this, direct URL access to any route other than `/` returns a 404.
