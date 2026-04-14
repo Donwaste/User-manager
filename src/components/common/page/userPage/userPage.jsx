@@ -7,8 +7,12 @@ const UserPage = ({ userId }) => {
   const [user, setUser] = useState();
   const navigate = useNavigate();
 
-  const handleClick = () => {
+  const handleBack = () => {
     navigate("/users");
+  };
+
+  const handleEdit = () => {
+    navigate(`/users/${userId}/edit`);
   };
 
   useEffect(() => {
@@ -19,16 +23,22 @@ const UserPage = ({ userId }) => {
     return <div>Loading...</div>;
   }
   return (
-    <>
+    <div>
       <h1>Name: {user.name}</h1>
       <p>Profession: {user.profession.name}</p>
       <Qualities qualities={user.qualities} />
       <p>Completed Meetings: {user.completedMeetings}</p>
       <p>Rating: {user.rate}</p>
-      <button onClick={handleClick} className="btn btn-primary">
-        Back
-      </button>
-    </>
+
+      <div className="d-flex flex-column gap-3 align-items-start">
+        <button onClick={handleEdit} className="btn btn-warning">
+          Edit
+        </button>
+        <button onClick={handleBack} className="btn btn-primary">
+          Back to all
+        </button>
+      </div>
+    </div>
   );
 };
 

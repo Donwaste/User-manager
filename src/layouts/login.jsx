@@ -1,15 +1,15 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import LoginForm from "../components/ui/loginForm";
-import { useState } from "react";
 import RegisterForm from "../components/ui/registerForm";
 
 const Login = () => {
-  const register = "register";
-  const login = "login";
   const { type } = useParams();
-  const [formType, setFormType] = useState(type === register ? type : login);
-  const toggleFormType = (params) => {
-    setFormType((prevState) => (prevState === register ? login : register));
+  const navigate = useNavigate();
+
+  const formType = type === "register" ? "register" : "login";
+
+  const toggleFormType = () => {
+    navigate(formType === "register" ? "/login" : "/login/register");
   };
 
   return (
@@ -17,13 +17,17 @@ const Login = () => {
       <div className="row">
         <div className="col-md-6 offset-md-3">
           <div className="card shadow-sm p-4 rounded-4 ">
-            {formType === login ? (
+            {formType === "login" ? (
               <>
                 <h3 className="mb-4">Login</h3>
                 <LoginForm />
                 <p>
                   Don't have account?
-                  <a role="button" onClick={toggleFormType}>
+                  <a
+                    role="button"
+                    onClick={toggleFormType}
+                    className="text-primary text-decoration-underline"
+                  >
                     Sign Up
                   </a>
                 </p>
@@ -34,7 +38,11 @@ const Login = () => {
                 <RegisterForm />
                 <p>
                   Already have account?
-                  <a role="button" onClick={toggleFormType}>
+                  <a
+                    role="button"
+                    onClick={toggleFormType}
+                    className="text-primary text-decoration-underline"
+                  >
                     Sign In
                   </a>
                 </p>
