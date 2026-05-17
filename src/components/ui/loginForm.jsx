@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import TextField from "../common/form/textField";
-import Validator from "../../utils/validator";
+import { validator } from "../../utils/validator";
 import CheckBoxField from "../common/form/checkBoxField";
 // import * as yup from "yup";
 
@@ -60,7 +60,7 @@ const LoginForm = () => {
   };
 
   const validate = () => {
-    const errors = Validator({ data, config: validatorConfig });
+    const errors = validator(data, validatorConfig);
     // validateScheme
     //   .validate(data)
     //   .then(() => setErrors({}))

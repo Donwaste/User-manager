@@ -1,4 +1,4 @@
-const Validator = ({ data, config }) => {
+export function validator(data, config) {
   const errors = {};
   const validate = (validateMethod, data, config) => {
     let statusValidate;
@@ -49,6 +49,4 @@ const Validator = ({ data, config }) => {
     }
   }
   return errors;
-};
-
-export default Validator;
+}

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Validator from "../../../../utils/validator";
+import { validator } from "../../../../utils/validator";
 import api from "../../../../api";
 import TextField from "../../form/textField";
 import SelectField from "../../form/selectField";
 import RadioField from "../../form/radioField";
 import MultiSelectField from "../../form/multiSelectField";
+import BackButton from "../../../common/backButton";
 
 const EditUserPage = () => {
   const { userId } = useParams();
@@ -73,7 +74,7 @@ const EditUserPage = () => {
   };
 
   const validate = () => {
-    const errors = Validator({ data, config: validatorConfig });
+    const errors = validator(data, validatorConfig);
     setErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -133,6 +134,7 @@ const EditUserPage = () => {
 
   return (
     <div className="container mt-5">
+      <BackButton />
       <div className="row">
         <div className="col-md-6 offset-md-3 shadow p-4">
           {!isLoading && professions.length > 0 ? (

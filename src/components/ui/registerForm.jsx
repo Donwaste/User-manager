@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import APi from "../../api";
 import TextField from "../common/form/textField";
-import Validator from "../../utils/validator";
+import { validator } from "../../utils/validator";
 import SelectField from "../common/form/selectField";
 import RadioField from "../common/form/radioField";
 import MultiSelectField from "../common/form/multiSelectField.jsx";
@@ -69,7 +69,7 @@ const RegisterForm = () => {
   };
 
   const validate = () => {
-    const errors = Validator({ data, config: validatorConfig });
+    const errors = validator(data, validatorConfig);
     setErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -110,7 +110,7 @@ const RegisterForm = () => {
         onChange={handleChange}
         value={data.profession}
         error={errors.profession}
-        name="professions"
+        name="profession"
         label="Select your profession"
       />
       <RadioField
