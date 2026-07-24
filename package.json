@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^1.16.1",
     "bootstrap": "^5.3.8",
     "lodash": "^4.17.23",
     "lodash-es": "^4.17.23",
@@ -17,10 +18,13 @@
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.13.2",
     "react-select": "^5.10.2",
+    "react-toastify": "^11.1.0",
     "yup": "^1.7.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
+    "@types/lodash": "^4.17.24",
+    "@types/lodash-es": "^4.17.12",
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.2",
