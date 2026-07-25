@@ -125,6 +125,7 @@ const RegisterForm = () => {
         error={errors.email}
       />
       <TextField
+        autoComplete="new-password"
         type="password"
         label="Password"
         name="password"

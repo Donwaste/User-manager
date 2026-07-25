@@ -96,6 +96,7 @@ const LoginForm = () => {
         error={errors.email}
       />
       <TextField
+        autoComplete="current-password"
         type="password"
         label="Password"
         name="password"
