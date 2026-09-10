@@ -11,7 +11,7 @@ const QualitiesList = ({ qualities }: QualitiesListProps) => {
   if (isLoading) {
     return <p>Loading...</p>;
   }
-
+  if (!qualities || qualities.length === 0) return null;
   return (
     <>
       {qualities.map((qual) => (

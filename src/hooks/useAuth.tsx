@@ -54,7 +54,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   async function signIn({ email, password }: Credentials) {
-    setIsLoading(true);
     try {
       const { data } = await httpAuth.post("accounts:signInWithPassword", {
         email,
@@ -68,15 +67,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const code = error.response?.data?.error?.code;
         const message = error.response?.data?.error?.message;
         if (code === 400 && message === "TOO_MANY_ATTEMPTS_TRY_LATER") {
-          const toastMsg = "Too many failed login attempts ,try later.";
-          errorCatcher(toastMsg);
+          errorCatcher("Too many failed login attempts, try later.");
           throw {};
         }
-        if (code === 400 && message === "INVALID_LOGIN_CREDENTIALS") {
-          throw { password: "Incorrect password " };
+        if (
+          code === 400 &&
+          (message === "INVALID_LOGIN_CREDENTIALS" ||
+            message === "INVALID_PASSWORD" ||
+            message === "EMAIL_NOT_FOUND")
+        ) {
+          throw { password: "Incorrect email or password" };
         }
         errorCatcher(message || error.message);
+        throw {};
       }
+      errorCatcher(error);
+      throw {};
     }
   }
 
@@ -98,8 +104,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     qualities,
     ...rest
   }: SignUpData) {
-    setIsLoading(true);
-
     try {
       const { data } = await httpAuth.post("accounts:signUp", {
         email,
@@ -112,10 +116,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         email,
         rate: randomInt(1, 5),
         completedMeetings: randomInt(0, 200),
-        qualities: qualities.map((q) => q.value),
+        qualities: qualities?.length
+          ? qualities.map((q: any) =>
+              typeof q === "object" && q !== null ? q.value : q,
+            )
+          : [],
         ...rest,
       });
-      setIsLoading(false);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const code = error.response?.data?.error?.code;
@@ -138,7 +145,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     data: Partial<UserType> & { _id: string; email: string },
   ) {
     try {
-      const content = await userService.create(data);
+      const { content } = await userService.create(data);
       setCurrentUser(content);
     } catch (error) {
       errorCatcher(error);

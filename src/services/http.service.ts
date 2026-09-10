@@ -19,17 +19,23 @@ http.interceptors.request.use(
       const refreshToken = localStorageService.getRefreshToken();
 
       if (refreshToken && expiresDate && Number(expiresDate) < Date.now()) {
-        const { data } = await httpAuth.post("token", {
-          grant_type: "refresh_token",
-          refresh_token: refreshToken,
-        });
+        try {
+          const { data } = await httpAuth.post("token", {
+            grant_type: "refresh_token",
+            refresh_token: refreshToken,
+          });
 
-        localStorageService.setTokens({
-          refreshToken: data.refresh_token,
-          idToken: data.id_token,
-          expiresIn: data.expires_in,
-          localId: data.user_id,
-        });
+          localStorageService.setTokens({
+            refreshToken: data.refresh_token,
+            idToken: data.id_token,
+            expiresIn: data.expires_in,
+            localId: data.user_id,
+          });
+        } catch (error) {
+          localStorageService.removeAuthData();
+          window.location.href = "/";
+          return Promise.reject(error);
+        }
       }
 
       const accessToken = localStorageService.getAccessToken();
