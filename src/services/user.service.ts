@@ -2,6 +2,10 @@ import httpService from "./http.service";
 import localStorageService from "./local.storage.services";
 import { UserType } from "../types";
 
+interface ApiResponse<T> {
+  content: T;
+}
+
 const userEndpoint = "users/";
 
 const userService = {
@@ -11,7 +15,7 @@ const userService = {
   },
   create: async (
     payload: Partial<UserType> & { _id: string; email: string },
-  ): Promise<UserType> => {
+  ): Promise<ApiResponse<UserType>> => {
     const { data } = await httpService.put(`users/${payload._id}`, payload);
     return data;
   },
