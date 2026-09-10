@@ -1,4 +1,4 @@
-import { range } from "lodash-es";
+import { range } from "lodash";
 
 interface PaginationProps {
   itemCount: number;

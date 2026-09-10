@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import TextField from "../common/form/textField";
 import { validator } from "../../utils/validator";
 import CheckBoxField from "../common/form/checkBoxField";
+import { useAuth } from "../../hooks/useAuth";
+import { useNavigate, useLocation } from "react-router-dom";
 // import * as yup from "yup";
 
 interface LoginFormData {
@@ -17,6 +19,9 @@ const LoginForm = () => {
     stayOn: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleChange = (target: { name: string; value: string | boolean }) => {
     setData((prevState) => ({ ...prevState, [target.name]: target.value }));
@@ -79,11 +84,17 @@ const LoginForm = () => {
     return Object.keys(errors).length === 0;
   };
   const isValid = Object.keys(errors).length === 0;
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const isValid = validate();
     if (!isValid) return;
-    console.log(data);
+    try {
+      await signIn(data);
+      const redirectPath = location.state?.from?.pathname || "/";
+      navigate(redirectPath, { replace: true });
+    } catch (error) {
+      setErrors(error as Record<string, string>);
+    }
   };
 
   return (

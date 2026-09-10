@@ -1,10 +1,20 @@
-interface QualityProps {
-  color: string;
-  name: string;
-}
+import { useQualities } from "../../../hooks/useQualities";
 
-const Quality = ({ color, name }: QualityProps) => {
-  return <span className={"badge m-1 bg-" + color}>{name}</span>;
+const Quality = ({ id }: { id: string }) => {
+  const { getQuality } = useQualities();
+  const quality = getQuality(id);
+
+  if (!quality) {
+    return null;
+  }
+
+  const { _id, name, color } = quality;
+
+  return (
+    <span className={"badge m-1 bg-" + color} key={_id}>
+      {name}
+    </span>
+  );
 };
 
 export default Quality;

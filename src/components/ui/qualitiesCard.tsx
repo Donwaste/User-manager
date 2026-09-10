@@ -1,8 +1,7 @@
 import Qualities from "./qualities";
-import { QualityType } from "../../types";
 
 interface QualitiesCardProps {
-  data: QualityType[];
+  data: string[];
 }
 
 const QualitiesCard = ({ data }: QualitiesCardProps) => {

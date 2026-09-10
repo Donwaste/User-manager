@@ -1,13 +1,16 @@
-import { OptionType } from "../../../types";
+interface SelectFieldOptionType {
+  label: string;
+  value: string;
+}
 
 interface SelectFieldProps {
-  label?: string;
+  label: string;
   onChange: (target: { name: string; value: string }) => void;
   value: string;
   defaultOption: string;
-  name: string;
   error?: string;
-  options: OptionType[];
+  options: SelectFieldOptionType[];
+  name: string;
 }
 
 const SelectField = ({
@@ -43,7 +46,7 @@ const SelectField = ({
         {options &&
           options.map((option) => (
             <option key={option.value} value={option.value}>
-              {option.name}
+              {option.label}
             </option>
           ))}
       </select>

@@ -6,3 +6,5 @@ export * from "./sortBy";
 export * from "./column";
 export * from "./optionType";
 export * from "./qualityOption";
+export * from "./providerProps";
+export * from "./authData";

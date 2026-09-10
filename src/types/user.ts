@@ -1,14 +1,11 @@
-import { ProfessionType } from "./profession";
-import { QualityType } from "./quality";
-
 export interface UserType {
   _id: string;
   name: string;
   email: string;
-  profession: ProfessionType;
-  qualities: QualityType[];
+  profession: string;
+  qualities: string[];
   completedMeetings: number;
   rate: number;
-  bookmark: boolean;
+  bookmark?: boolean;
   sex?: string;
 }

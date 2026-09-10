@@ -1,49 +1,37 @@
 import { useState, useEffect } from "react";
 import _ from "lodash";
-import API from "../../../../api";
 import paginate from "../../../../utils/paginate";
 import Pagination from "../../pagination";
 import SearchStatus from "../../../ui/searchStatus";
 import GroupList from "../../groupList";
 import UserTable from "../../../ui/userTable";
-import { UserType, ProfessionType, SortBy } from "../../../../types";
+import { ProfessionType, SortBy, UserType } from "../../../../types";
+import { useUsers } from "../../../../hooks/useUsers";
+import { useProfessions } from "../../../../hooks/useProfession";
+import { useAuth } from "../../../../hooks/useAuth";
 
 const UsersListPage = () => {
   const pageSize = 8;
-
-  const [users, setUsers] = useState<UserType[] | undefined>(undefined);
+  const { currentUser } = useAuth();
+  const { users } = useUsers();
   const [searchQuery, setSearchQuery] = useState("");
-  const [professions, setProfessions] = useState<ProfessionType[] | undefined>(
-    undefined,
-  );
   const [selectedProf, setSelectedProf] = useState<ProfessionType | undefined>(
     undefined,
   );
   const [sortBy, setSortBy] = useState<SortBy>({ path: "name", order: "asc" });
+  const { professions, isLoading: professionsLoading } = useProfessions();
   const [currentPage, setCurrentPage] = useState(1);
-
-  useEffect(() => {
-    API.users.fetchAll().then((data) => setUsers(data));
-  }, []);
-
-  useEffect(() => {
-    API.professions.fetchAll().then((data) => setProfessions(data));
-  }, []);
 
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedProf, searchQuery]);
 
-  const handleDelete = (userId: string) => {
-    setUsers((prev) => prev?.filter((user) => user._id !== userId));
-  };
-
   const handleToggleBookmark = (id: string) => {
-    setUsers((prev) =>
-      prev?.map((user) =>
-        user._id === id ? { ...user, bookmark: !user.bookmark } : user,
-      ),
-    );
+    // setUsers((prev) =>
+    //   prev?.map((user) =>
+    //     user._id === id ? { ...user, bookmark: !user.bookmark } : user,
+    //   ),
+    // );
   };
 
   const handlePageChange = (pageIndex: number) => {
@@ -71,13 +59,17 @@ const UsersListPage = () => {
   };
 
   if (users) {
-    const filteredUsers = searchQuery
-      ? users.filter((user) =>
-          user.name.toLowerCase().includes(searchQuery.toLowerCase()),
-        )
-      : selectedProf
-        ? users.filter((user) => user.profession._id === selectedProf._id)
-        : users;
+    function filterUsers(data: UserType[]) {
+      const filteredUsers = searchQuery
+        ? data.filter((user) =>
+            user.name.toLowerCase().includes(searchQuery.toLowerCase()),
+          )
+        : selectedProf
+          ? data.filter((user) => user.profession === selectedProf._id)
+          : data;
+      return filteredUsers.filter((u) => u._id !== currentUser!._id);
+    }
+    const filteredUsers = filterUsers(users);
 
     const count = filteredUsers.length;
     const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order]);
@@ -86,7 +78,7 @@ const UsersListPage = () => {
     return (
       <>
         <div className="d-flex">
-          {professions && (
+          {professions && !professionsLoading && (
             <div className="d-flex flex-column flex-shrink-0 p-3">
               <GroupList
                 selectedItem={selectedProf}
@@ -116,7 +108,6 @@ const UsersListPage = () => {
                 users={usersCrop}
                 onSort={handleSort}
                 selectedSort={sortBy}
-                onDelete={handleDelete}
                 onToggleBookmark={handleToggleBookmark}
               />
             )}

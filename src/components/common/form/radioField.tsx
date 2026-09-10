@@ -1,10 +1,13 @@
-import { OptionType } from "../../../types";
+interface RadioOptionType {
+  name: string;
+  value: string;
+}
 
 interface RadioFieldProps {
   value: string;
   onChange: (target: { name: string; value: string }) => void;
   name: string;
-  options: OptionType[];
+  options: RadioOptionType[];
   label: string;
 }
 

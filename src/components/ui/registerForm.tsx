@@ -1,16 +1,20 @@
 import { useState, useEffect } from "react";
-import APi from "../../api/index.js";
-import TextField from "../common/form/textField.js";
-import { validator } from "../../utils/validator.js";
-import SelectField from "../common/form/selectField.js";
-import RadioField from "../common/form/radioField.js";
-import MultiSelectField from "../common/form/multiSelectField.js";
-import CheckBoxField from "../common/form/checkBoxField.js";
-import { QualityType, OptionType, QualityOption } from "../../types";
+import TextField from "../common/form/textField.tsx";
+import { validator } from "../../utils/validator.ts";
+import SelectField from "../common/form/selectField.tsx";
+import RadioField from "../common/form/radioField.tsx";
+import MultiSelectField from "../common/form/multiSelectField.tsx";
+import CheckBoxField from "../common/form/checkBoxField.tsx";
+import { QualityOption } from "../../types";
+import { useQualities } from "../../hooks/useQualities.tsx";
+import { useProfessions } from "../../hooks/useProfession.tsx";
+import { useAuth } from "../../hooks/useAuth.tsx";
+import { useNavigate } from "react-router-dom";
 
 interface RegisterFormData {
   email: string;
   password: string;
+  name: string;
   profession: string;
   sex: string;
   license: boolean;
@@ -21,15 +25,28 @@ const RegisterForm = () => {
   const [data, setData] = useState<RegisterFormData>({
     email: "",
     password: "",
+    name: "",
     profession: "",
     sex: "Male",
     qualities: [],
     license: false,
   });
-
-  const [qualities, setQualities] = useState<QualityOption[]>([]);
+  const { signUp } = useAuth();
+  const navigate = useNavigate();
+  const { qualities } = useQualities();
+  const qualitiesList =
+    qualities.map((q) => ({
+      label: q.name,
+      value: q._id,
+      color: q.color,
+    })) || [];
+  const { professions } = useProfessions();
+  const professionsList =
+    professions.map((p) => ({
+      label: p.name,
+      value: p._id,
+    })) || [];
   const [errors, setErrors] = useState({} as Record<string, string>);
-  const [professions, setProfessions] = useState<OptionType[]>([]);
 
   const handleChange = (target: {
     name: string;
@@ -37,25 +54,6 @@ const RegisterForm = () => {
   }) => {
     setData((prevState) => ({ ...prevState, [target.name]: target.value }));
   };
-
-  useEffect(() => {
-    APi.professions.fetchAll().then((data) => {
-      const profArray = data.map((profession) => ({
-        name: profession.name,
-        value: profession._id,
-      }));
-      setProfessions(profArray);
-    });
-
-    APi.qualities.fetchAll().then((data) => {
-      const qualitiesList = data.map((quality: QualityType) => ({
-        value: quality._id,
-        label: quality.name,
-        color: quality.color,
-      }));
-      setQualities(qualitiesList);
-    });
-  }, []);
 
   const validatorConfig = {
     email: {
@@ -80,6 +78,15 @@ const RegisterForm = () => {
       min: {
         message: "Password must be at least 8 characters long",
         value: 8,
+      },
+    },
+    name: {
+      isRequired: {
+        message: "Name is required",
+      },
+      min: {
+        message: "Name must be at least 3 characters long",
+        value: 3,
       },
     },
 
@@ -108,11 +115,19 @@ const RegisterForm = () => {
 
   const isValid = Object.keys(errors).length === 0;
 
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const isValid = validate();
     if (!isValid) return;
-    console.log(data);
+    const newData = {
+      ...data,
+    };
+    try {
+      await signUp(newData);
+      navigate("/");
+    } catch (error) {
+      setErrors(error as Record<string, string>);
+    }
   };
 
   return (
@@ -125,6 +140,13 @@ const RegisterForm = () => {
         error={errors.email}
       />
       <TextField
+        label="Name"
+        name="name"
+        value={data.name}
+        onChange={handleChange}
+        error={errors.name}
+      />
+      <TextField
         autoComplete="new-password"
         type="password"
         label="Password"
@@ -135,7 +157,7 @@ const RegisterForm = () => {
       />
       <SelectField
         defaultOption={"Choose..."}
-        options={professions}
+        options={professionsList}
         onChange={handleChange}
         value={data.profession}
         error={errors.profession}
@@ -154,7 +176,7 @@ const RegisterForm = () => {
         label="Select your gender"
       />
       <MultiSelectField
-        options={qualities}
+        options={qualitiesList}
         onChange={handleChange}
         defaultValue={data.qualities}
         name="qualities"

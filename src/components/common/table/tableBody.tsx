@@ -12,7 +12,7 @@ const TableBody = ({ data, columns }: TableBodyProps) => {
     if (component) {
       return component(item);
     }
-    return path ? _.get(item, path) : null;67
+    return path ? _.get(item, path) : null;
   };
 
   return (

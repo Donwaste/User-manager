@@ -1,15 +1,21 @@
 import Quality from "./quality";
-import { QualityType } from "../../../types";
+import { useQualities } from "../../../hooks/useQualities";
 
 interface QualitiesListProps {
-  qualities: QualityType[];
+  qualities: string[];
 }
 
 const QualitiesList = ({ qualities }: QualitiesListProps) => {
+  const { isLoading } = useQualities();
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
   return (
     <>
       {qualities.map((qual) => (
-        <Quality key={qual._id} {...qual} />
+        <Quality key={qual} id={qual} />
       ))}
     </>
   );
