@@ -1,27 +1,31 @@
-interface SelectFieldOptionType {
+import React from "react";
+
+export interface SelectOption {
   label: string;
   value: string;
 }
 
 interface SelectFieldProps {
   label: string;
-  onChange: (target: { name: string; value: string }) => void;
-  value: string;
-  defaultOption: string;
-  error?: string;
-  options: SelectFieldOptionType[];
   name: string;
+  value: string;
+  onChange: (target: { name: string; value: string }) => void;
+  defaultOption: string;
+  options?: SelectOption[];
+  error?: string | null;
+  disabled?: boolean;
 }
 
-const SelectField = ({
+const SelectField: React.FC<SelectFieldProps> = ({
   label,
+  name,
   value,
   onChange,
   defaultOption,
-  options,
+  options = [],
   error,
-  name,
-}: SelectFieldProps) => {
+  disabled = false,
+}) => {
   const handleChange = ({ target }: React.ChangeEvent<HTMLSelectElement>) => {
     onChange({ name: target.name, value: target.value });
   };
@@ -38,18 +42,19 @@ const SelectField = ({
         name={name}
         value={value}
         onChange={handleChange}
+        disabled={disabled}
       >
         <option disabled value="">
           {defaultOption}
         </option>
 
-        {options &&
-          options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
       </select>
+
       {error && <div className="invalid-feedback">{error}</div>}
     </div>
   );

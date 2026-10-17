@@ -1,20 +1,16 @@
-import { useQualities } from "../../../hooks/useQualities";
+import { useAppSelector } from "../../../store/hooks";
+import { getQualityById } from "../../../store/qualities";
 
 const Quality = ({ id }: { id: string }) => {
-  const { getQuality } = useQualities();
-  const quality = getQuality(id);
+  const quality = useAppSelector(getQualityById(id));
 
   if (!quality) {
     return null;
   }
 
-  const { _id, name, color } = quality;
+  const { name, color } = quality;
 
-  return (
-    <span className={"badge m-1 bg-" + color} key={_id}>
-      {name}
-    </span>
-  );
+  return <span className={"badge m-1 bg-" + color}>{name}</span>;
 };
 
 export default Quality;

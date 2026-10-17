@@ -1,9 +1,15 @@
-import { useProfessions } from "../../hooks/useProfession";
+import {
+  getProfessionById,
+  getProfessionsLoadingStatus,
+} from "../../store/professions";
+import { useAppSelector } from "../../store/hooks";
 
 const Profession = ({ id }: { id: string }) => {
-  const { getProfession, isLoading } = useProfessions();
-  const profession = getProfession(id);
+  const isLoading = useAppSelector(getProfessionsLoadingStatus());
+  const profession = useAppSelector(getProfessionById(id));
+
   if (isLoading) return "Loading...";
+
   return <>{profession?.name}</>;
 };
 

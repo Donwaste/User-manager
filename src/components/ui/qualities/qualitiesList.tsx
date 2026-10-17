@@ -1,15 +1,15 @@
+import { useSelector } from "react-redux";
 import Quality from "./quality";
-import { useQualities } from "../../../hooks/useQualities";
-
+import { getQualitiesStatus } from "../../../store/qualities";
 interface QualitiesListProps {
   qualities: string[];
 }
 
 const QualitiesList = ({ qualities }: QualitiesListProps) => {
-  const { isLoading } = useQualities();
+  const isLoading = useSelector(getQualitiesStatus());
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <>Loading...</>;
   }
   if (!qualities || qualities.length === 0) return null;
   return (

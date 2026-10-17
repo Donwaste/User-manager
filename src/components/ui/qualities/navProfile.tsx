@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../../hooks/useAuth";
+import { useAppSelector } from "../../../store/hooks";
+import { getCurrentUserData } from "../../../store/users";
 
 const NavProfile = () => {
-  const { currentUser } = useAuth();
+  const currentUser = useAppSelector(getCurrentUserData());
   const [isOpen, setOpen] = useState(false);
 
   if (!currentUser) return null;

@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
 import NavProfile from "./qualities/navProfile";
+import { useAppSelector } from "../../store/hooks";
+import { getCurrentUserId, getIsLoggedIn } from "../../store/users";
 
 const NavBar = () => {
-  const { currentUser } = useAuth();
+  const isLoggedIn = useAppSelector(getIsLoggedIn());
+  const currentUserId = useAppSelector(getCurrentUserId());
+  const adminId = import.meta.env.VITE_ADMIN_ID;
+
   return (
     <nav className="navbar bg-light mb-3">
       <div className="container-fluid">
@@ -13,23 +17,30 @@ const NavBar = () => {
               Home
             </Link>
           </li>
-          {currentUser && (
-            <li className="nav-item">
-              <Link className="nav-link" to="/users">
-                Users
-              </Link>
-            </li>
+          {isLoggedIn && (
+            <>
+              <li className="nav-item">
+                <Link className="nav-link" to="/users">
+                  Users
+                </Link>
+              </li>
+              {currentUserId === adminId && (
+                <li className="nav-item">
+                  <Link className="nav-link" to="/admin">
+                    Admin Panel
+                  </Link>
+                </li>
+              )}
+            </>
           )}
         </ul>
-        <div className="d-flex">
-          {currentUser ? (
+        <div className="d-flex align-items-center">
+          {isLoggedIn ? (
             <NavProfile />
           ) : (
-            <li className="nav-item">
-              <Link className="nav-link" to="/login">
-                Login
-              </Link>
-            </li>
+            <Link className="nav-link" to="/login">
+              Login
+            </Link>
           )}
         </div>
       </div>

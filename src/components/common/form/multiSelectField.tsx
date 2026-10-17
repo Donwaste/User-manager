@@ -7,7 +7,7 @@ interface SelectOptionType {
 }
 interface MultiSelectFieldProps {
   options: SelectOptionType[];
-  onChange: (target: { name: string; value: any }) => void;
+  onChange: (target: { name: string; value: string[] }) => void;
   name: string;
   label: string;
   defaultValue?: (SelectOptionType | string)[];

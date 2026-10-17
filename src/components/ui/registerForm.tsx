@@ -1,56 +1,50 @@
-import { useState, useEffect } from "react";
-import TextField from "../common/form/textField.tsx";
-import { validator } from "../../utils/validator.ts";
-import SelectField from "../common/form/selectField.tsx";
-import RadioField from "../common/form/radioField.tsx";
-import MultiSelectField from "../common/form/multiSelectField.tsx";
-import CheckBoxField from "../common/form/checkBoxField.tsx";
-import { QualityOption } from "../../types";
-import { useQualities } from "../../hooks/useQualities.tsx";
-import { useProfessions } from "../../hooks/useProfession.tsx";
-import { useAuth } from "../../hooks/useAuth.tsx";
+import React, { useState, useEffect } from "react";
+import TextField from "../common/form/textField";
+import { validator } from "../../utils/validator";
+import SelectField from "../common/form/selectField";
+import RadioField from "../common/form/radioField";
+import MultiSelectField from "../common/form/multiSelectField";
+import CheckBoxField from "../common/form/checkBoxField";
+import { QualityOption, SignUpData } from "../../types";
 import { useNavigate } from "react-router-dom";
-
-interface RegisterFormData {
-  email: string;
-  password: string;
-  name: string;
-  profession: string;
-  sex: string;
-  license: boolean;
-  qualities: QualityOption[];
-}
+import { useAppSelector, useAppDispatch } from "../../store/hooks";
+import { getQualities } from "../../store/qualities";
+import { getProfessions } from "../../store/professions";
+import { signUp, getAuthErrors } from "../../store/users";
+import { getErrorMessage } from "../../utils/getErrorMessage";
 
 const RegisterForm = () => {
-  const [data, setData] = useState<RegisterFormData>({
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const [data, setData] = useState<SignUpData>({
     email: "",
     password: "",
     name: "",
     profession: "",
-    sex: "Male",
+    sex: "male",
     qualities: [],
     license: false,
   });
-  const { signUp } = useAuth();
-  const navigate = useNavigate();
-  const { qualities } = useQualities();
+
+  const qualities = useAppSelector(getQualities());
   const qualitiesList =
-    qualities.map((q) => ({
+    (qualities || []).map((q) => ({
       label: q.name,
       value: q._id,
       color: q.color,
     })) || [];
-  const { professions } = useProfessions();
-  const professionsList =
-    professions.map((p) => ({
-      label: p.name,
-      value: p._id,
-    })) || [];
-  const [errors, setErrors] = useState({} as Record<string, string>);
+
+  const professions = useAppSelector(getProfessions());
+  const professionsList = (professions || []).map((p) => ({
+    label: p.name,
+    value: p._id,
+  }));
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (target: {
     name: string;
-    value: string | boolean | string[];
+    value: string | boolean | string[] | QualityOption[];
   }) => {
     setData((prevState) => ({ ...prevState, [target.name]: target.value }));
   };
@@ -64,7 +58,6 @@ const RegisterForm = () => {
         message: "Email address was entered incorrectly",
       },
     },
-
     password: {
       isRequired: {
         message: "Password is required",
@@ -89,13 +82,11 @@ const RegisterForm = () => {
         value: 3,
       },
     },
-
     profession: {
       isRequired: {
         message: "Profession is required",
       },
     },
-
     license: {
       isRequired: {
         message: "Please confirm that you have read the license agreement.",
@@ -119,14 +110,12 @@ const RegisterForm = () => {
     e.preventDefault();
     const isValid = validate();
     if (!isValid) return;
-    const newData = {
-      ...data,
-    };
+
     try {
-      await signUp(newData);
-      navigate("/");
+      await dispatch(signUp(data));
+      navigate("/", { replace: true });
     } catch (error) {
-      setErrors(error as Record<string, string>);
+      setErrors({ email: getErrorMessage(error) });
     }
   };
 
@@ -156,7 +145,7 @@ const RegisterForm = () => {
         error={errors.password}
       />
       <SelectField
-        defaultOption={"Choose..."}
+        defaultOption="Choose..."
         options={professionsList}
         onChange={handleChange}
         value={data.profession}
@@ -166,9 +155,9 @@ const RegisterForm = () => {
       />
       <RadioField
         options={[
-          { name: "Male", value: "Male" },
-          { name: "Female", value: "Female" },
-          { name: "Other", value: "Other" },
+          { name: "Male", value: "male" },
+          { name: "Female", value: "female" },
+          { name: "Other", value: "other" },
         ]}
         value={data.sex}
         name="sex"
@@ -188,8 +177,9 @@ const RegisterForm = () => {
         name="license"
         error={errors.license}
       >
-        Confirm the<a> license agreement</a>?
+        Confirm the <a>license agreement</a>?
       </CheckBoxField>
+
       <button
         type="submit"
         className="btn btn-primary w-100 mt-3"

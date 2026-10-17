@@ -1,24 +1,27 @@
 import { displayDate } from "../../../utils/displayDate";
-import { CommentType, UserType } from "../../../types";
-import { useUsers } from "../../../hooks/useUsers";
-import { useAuth } from "../../../hooks/useAuth";
+import { CommentType } from "../../../types";
+import { useAppSelector } from "../../../store/hooks";
+import { getCurrentUserId, getUserById } from "../../../store/users";
 
-interface CommentProps extends CommentType {
+interface CommentProps {
+  comment?: CommentType;
+  content?: string;
+  created_at?: string | number;
+  _id?: string;
+  userId?: string;
   onRemove: (id: string) => void;
 }
 
-const Comment = ({
-  content,
-  created_at: created,
-  _id: id,
-  userId,
-  onRemove,
-}: CommentProps) => {
-  const { getUserById } = useUsers();
-  const { currentUser } = useAuth();
-  const user = getUserById(userId);
+const Comment = (props: CommentProps) => {
+  const currentComment = props.comment || props;
+  const { content, created_at: created, _id: id, userId } = currentComment;
+  const { onRemove } = props;
+
+  const currentUserId = useAppSelector(getCurrentUserId());
+  const user = useAppSelector(getUserById(userId || ""));
+
   return (
-    <li className="bg-light card-body mb-3">
+    <div className="bg-light card-body mb-3 rounded">
       <div className="row">
         <div className="col">
           <div className="d-flex flex-start">
@@ -33,13 +36,15 @@ const Comment = ({
               <div className="mb-4">
                 <div className="d-flex justify-content-between align-items-center">
                   <p className="mb-1">
-                    {user?.name}
-                    <span className="small">- {displayDate(created)}</span>
+                    {user ? user.name : "Loading..."}{" "}
+                    <span className="small text-muted ms-2">
+                      - {created ? displayDate(String(created)) : ""}
+                    </span>
                   </p>
-                  {currentUser!._id === id && (
+                  {currentUserId === userId && (
                     <button
                       className="btn btn-sm text-primary d-flex align-items-center"
-                      onClick={() => onRemove(id)}
+                      onClick={() => id && onRemove(id)}
                     >
                       <i className="bi bi-x-lg"></i>
                     </button>
@@ -51,7 +56,7 @@ const Comment = ({
           </div>
         </div>
       </div>
-    </li>
+    </div>
   );
 };
 

@@ -6,6 +6,7 @@ export interface UserType {
   qualities: string[];
   completedMeetings: number;
   rate: number;
-  bookmark?: boolean;
-  sex?: string;
+  sex: string;
+  bookmarks?: Record<string, boolean>;
+  license: boolean;
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { validator } from "../../../../utils/validator";
 import TextField from "../../form/textField";
@@ -6,9 +6,16 @@ import SelectField from "../../form/selectField";
 import RadioField from "../../form/radioField";
 import MultiSelectField from "../../form/multiSelectField";
 import BackButton from "../../backButton";
-import { useAuth } from "../../../../hooks/useAuth";
-import { useQualities } from "../../../../hooks/useQualities";
-import { useProfessions } from "../../../../hooks/useProfession";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import { getCurrentUserData, updateUser } from "../../../../store/users";
+import { getQualities, getQualitiesStatus } from "../../../../store/qualities";
+import { UserType } from "../../../../types";
+import {
+  getProfessions,
+  getProfessionsLoadingStatus,
+} from "../../../../store/professions";
+import { toast } from "react-toastify";
+import { getErrorMessage } from "../../../../utils/getErrorMessage";
 
 interface QualityOption {
   label: string;
@@ -27,21 +34,25 @@ interface EditUserFormData {
 
 const EditUserPage = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const currentUser = useAppSelector(getCurrentUserData());
+
+  const professionsLoading = useAppSelector(getProfessionsLoadingStatus());
+  const professions = useAppSelector(getProfessions());
+  const qualities = useAppSelector(getQualities());
+  const qualitiesLoading = useAppSelector(getQualitiesStatus());
+
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<EditUserFormData>();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const { currentUser, updateUserData } = useAuth();
-  const { qualities, isLoading: qualitiesLoading } = useQualities();
-  const { professions, isLoading: professionsLoading } = useProfessions();
-
-  const professionsList = professions.map((p) => ({
+  const professionsList = (professions || []).map((p) => ({
     label: p.name,
     name: p.name,
     value: p._id,
   }));
 
-  const qualitiesList = qualities.map((q) => ({
+  const qualitiesList = (qualities || []).map((q) => ({
     label: q.name,
     value: q._id,
     color: q.color,
@@ -50,7 +61,7 @@ const EditUserPage = () => {
   function getQualitiesListByIds(qualitiesIds: string[]) {
     const qualitiesArray = [];
     for (const qualId of qualitiesIds) {
-      for (const quality of qualities) {
+      for (const quality of qualities || []) {
         if (quality._id === qualId) {
           qualitiesArray.push(quality);
           break;
@@ -68,14 +79,20 @@ const EditUserPage = () => {
   };
 
   useEffect(() => {
-    if (!professionsLoading && !qualitiesLoading && currentUser && !data) {
+    if (
+      !professionsLoading &&
+      !qualitiesLoading &&
+      currentUser &&
+      !data &&
+      qualities
+    ) {
       setData({
         ...currentUser,
         sex: currentUser.sex || "male",
         qualities: transformData(currentUser.qualities || []),
       });
     }
-  }, [professionsLoading, qualitiesLoading, currentUser, data]);
+  }, [professionsLoading, qualitiesLoading, currentUser, data, qualities]);
 
   useEffect(() => {
     if (data && isLoading) {
@@ -120,12 +137,18 @@ const EditUserPage = () => {
       typeof q === "object" && q !== null ? q.value : q,
     );
 
-    await updateUserData({
-      ...data,
-      qualities: qualitiesIds,
-    });
-
-    navigate(`/users/${currentUser?._id}`);
+    try {
+      await dispatch(
+        updateUser({
+          ...currentUser,
+          ...data,
+          qualities: qualitiesIds,
+        } as UserType),
+      );
+      navigate(`/users/${currentUser?._id}`);
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error));
+    }
   };
 
   const isValid = Object.keys(errors).length === 0;

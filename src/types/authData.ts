@@ -1,8 +1,7 @@
-import { QualityOption } from "./qualityOption";
-
 export interface Credentials {
   email: string;
   password: string;
+  stayOn?: boolean;
 }
 
 export interface SignUpData extends Credentials {
@@ -12,5 +11,5 @@ export interface SignUpData extends Credentials {
   name: string;
   sex: string;
   license: boolean;
-  qualities: QualityOption[];
+  qualities: string[];
 }

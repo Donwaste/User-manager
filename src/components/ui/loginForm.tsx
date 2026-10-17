@@ -1,25 +1,22 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import TextField from "../common/form/textField";
 import { validator } from "../../utils/validator";
 import CheckBoxField from "../common/form/checkBoxField";
-import { useAuth } from "../../hooks/useAuth";
 import { useNavigate, useLocation } from "react-router-dom";
-// import * as yup from "yup";
-
-interface LoginFormData {
-  email: string;
-  password: string;
-  stayOn: boolean;
-}
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { login, getAuthErrors } from "../../store/users";
+import { getErrorMessage } from "../../utils/getErrorMessage";
+import { Credentials } from "../../types";
 
 const LoginForm = () => {
-  const [data, setData] = useState<LoginFormData>({
+  const [data, setData] = useState<Credentials>({
     email: "",
     password: "",
     stayOn: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { signIn } = useAuth();
+
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -27,46 +24,17 @@ const LoginForm = () => {
     setData((prevState) => ({ ...prevState, [target.name]: target.value }));
   };
 
-  useEffect(() => {
-    validate();
-  }, [data]);
-
-  // const validateScheme = yup.object().shape({
-  //   password: yup
-  //     .string()
-  //     .required("Password is required")
-  //     .matches(
-  //       /[A-Z]/,
-  //       "Password must contain at least one uppercase character",
-  //     )
-  //     .matches(/[0-9]/, "Password must contain at least one number")
-  //     .matches(
-  //       /[!@#$^&*_-]/,
-  //       "The password must contain one of the special characters (!@#$^&*_-)!",
-  //     )
-  //     .min(8, "Password must be at least 8 characters long"),
-  //   email: yup.string().required("Email is required"),
-  // });
-
   const validatorConfig = {
     email: {
-      isRequired: {
-        message: "Email is required",
-      },
-      isEmail: {
-        message: "Email address was entered incorrectly ",
-      },
+      isRequired: { message: "Email is required" },
+      isEmail: { message: "Email address was entered incorrectly" },
     },
     password: {
-      isRequired: {
-        message: "Password is required",
-      },
+      isRequired: { message: "Password is required" },
       isCapital: {
-        message: "Password must contain at least one uppercase character ",
+        message: "Password must contain at least one uppercase character",
       },
-      isContainDigit: {
-        message: "Password must contain at least one number ",
-      },
+      isContainDigit: { message: "Password must contain at least one number" },
       min: {
         message: "Password must be at least 8 characters long",
         value: 8,
@@ -76,24 +44,27 @@ const LoginForm = () => {
 
   const validate = () => {
     const errors = validator(data, validatorConfig);
-    // validateScheme
-    //   .validate(data)
-    //   .then(() => setErrors({}))
-    //   .catch((err) => setErrors({ [err.path]: err.message }));
     setErrors(errors);
     return Object.keys(errors).length === 0;
   };
+
+  useEffect(() => {
+    validate();
+  }, [data]);
+
   const isValid = Object.keys(errors).length === 0;
+
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const isValid = validate();
     if (!isValid) return;
+
     try {
-      await signIn(data);
+      await dispatch(login(data));
       const redirectPath = location.state?.from?.pathname || "/";
       navigate(redirectPath, { replace: true });
     } catch (error) {
-      setErrors(error as Record<string, string>);
+      setErrors({ email: getErrorMessage(error) });
     }
   };
 
@@ -115,7 +86,11 @@ const LoginForm = () => {
         onChange={handleChange}
         error={errors.password}
       />
-      <CheckBoxField value={data.stayOn} onChange={handleChange} name="stayOn">
+      <CheckBoxField
+        value={!!data.stayOn}
+        onChange={handleChange}
+        name="stayOn"
+      >
         Stay on?
       </CheckBoxField>
       <button

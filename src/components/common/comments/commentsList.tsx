@@ -8,7 +8,7 @@ interface CommentsListProps {
 
 const CommentsList = ({ comments, onRemove }: CommentsListProps) => {
   if (!comments.length) {
-    return <p>Loading...</p>;
+    return <>Loading...</>;
   }
 
   return (
