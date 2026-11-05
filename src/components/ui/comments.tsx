@@ -10,6 +10,7 @@ import {
   loadCommentsList,
   removeComment,
 } from "../../store/comments";
+import Spinner from "../common/spinner";
 
 const Comments = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -54,7 +55,7 @@ const Comments = () => {
                 onRemove={handleRemoveComment}
               />
             ) : (
-              <p>Loading comments...</p>
+              <Spinner />
             )}
           </div>
         </div>

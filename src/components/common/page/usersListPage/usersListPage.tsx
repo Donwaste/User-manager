@@ -16,6 +16,7 @@ import {
   getUsersList,
   updateUser,
 } from "../../../../store/users";
+import Spinner from "../../spinner";
 
 const PAGE_SIZE = 8;
 
@@ -62,7 +63,7 @@ const UsersListPage = () => {
     return _.orderBy(filteredUsers, [iteratee], [sortBy.order]);
   }, [filteredUsers, sortBy, currentUser?.bookmarks]);
 
-  if (!users) return <>Loading...</>;
+  if (!users) return <Spinner />;
 
   const count = filteredUsers.length;
   const pageCount = Math.max(1, Math.ceil(count / PAGE_SIZE));

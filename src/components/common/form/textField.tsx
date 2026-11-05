@@ -8,6 +8,7 @@ interface TextFieldProps {
   onChange: (target: { name: string; value: string }) => void;
   error?: string;
   autoComplete?: string;
+  disabled?: boolean;
 }
 
 const TextField = ({
@@ -18,6 +19,7 @@ const TextField = ({
   onChange,
   error,
   autoComplete,
+  disabled = false,
 }: TextFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -45,6 +47,7 @@ const TextField = ({
           name={name}
           value={value}
           onChange={handleChange}
+          disabled={disabled}
           className={getInputClasses()}
           autoComplete={
             autoComplete ??

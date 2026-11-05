@@ -16,6 +16,7 @@ import {
 } from "../../../../store/professions";
 import { toast } from "react-toastify";
 import { getErrorMessage } from "../../../../utils/getErrorMessage";
+import Spinner from "../../spinner";
 
 interface QualityOption {
   label: string;
@@ -173,6 +174,7 @@ const EditUserPage = () => {
                 value={data.email}
                 onChange={handleChange}
                 error={errors.email}
+                disabled
               />
               <SelectField
                 label="Choose your profession"
@@ -210,7 +212,7 @@ const EditUserPage = () => {
               </button>
             </form>
           ) : (
-            <h2>Loading...</h2>
+            <Spinner />
           )}
         </div>
       </div>

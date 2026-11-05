@@ -4,6 +4,7 @@ import MeetingsCard from "../../../ui/meetingsCard";
 import Comments from "../../../ui/comments";
 import { useAppSelector } from "../../../../store/hooks";
 import { getUserById } from "../../../../store/users";
+import Spinner from "../../spinner";
 
 interface UserPageProps {
   userId: string;
@@ -28,7 +29,7 @@ const UserPage = ({ userId }: UserPageProps) => {
       </div>
     );
   }
-  return <h1>Loading</h1>;
+  return <Spinner />;
 };
 
 export default UserPage;

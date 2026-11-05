@@ -2,6 +2,7 @@ import { displayDate } from "../../../utils/displayDate";
 import { CommentType } from "../../../types";
 import { useAppSelector } from "../../../store/hooks";
 import { getCurrentUserId, getUserById } from "../../../store/users";
+import Spinner from "../spinner";
 
 interface CommentProps {
   comment?: CommentType;
@@ -36,7 +37,7 @@ const Comment = (props: CommentProps) => {
               <div className="mb-4">
                 <div className="d-flex justify-content-between align-items-center">
                   <p className="mb-1">
-                    {user ? user.name : "Loading..."}{" "}
+                    {user ? user.name : <Spinner size="sm" />}
                     <span className="small text-muted ms-2">
                       - {created ? displayDate(String(created)) : ""}
                     </span>

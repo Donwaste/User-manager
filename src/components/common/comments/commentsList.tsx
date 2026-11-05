@@ -1,5 +1,6 @@
 import { CommentType } from "../../../types";
 import Comment from "./comment";
+import Spinner from "../spinner";
 
 interface CommentsListProps {
   comments: CommentType[];
@@ -8,7 +9,7 @@ interface CommentsListProps {
 
 const CommentsList = ({ comments, onRemove }: CommentsListProps) => {
   if (!comments.length) {
-    return <>Loading...</>;
+    return <Spinner />;
   }
 
   return (

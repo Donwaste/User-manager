@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
 import Quality from "./quality";
 import { getQualitiesStatus } from "../../../store/qualities";
+import Spinner from "../../common/spinner";
 interface QualitiesListProps {
   qualities: string[];
 }
@@ -9,7 +10,7 @@ const QualitiesList = ({ qualities }: QualitiesListProps) => {
   const isLoading = useSelector(getQualitiesStatus());
 
   if (isLoading) {
-    return <>Loading...</>;
+    return <Spinner size="sm" />;
   }
   if (!qualities || qualities.length === 0) return null;
   return (

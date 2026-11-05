@@ -11,17 +11,12 @@ import {
 } from "../../../store/users";
 import { loadQualitiesList } from "../../../store/qualities";
 import { loadProfessionsList } from "../../../store/professions";
+import Spinner from "../../common/spinner";
+import { toast } from "react-toastify";
 
 interface AppLoaderProps {
   children: React.ReactNode;
 }
-const Spinner = () => (
-  <div className="d-flex justify-content-center mt-5">
-    <div className="spinner-border" role="status">
-      <span className="visually-hidden">Loading...</span>
-    </div>
-  </div>
-);
 
 const AppLoader = ({ children }: AppLoaderProps) => {
   const dispatch = useAppDispatch();
@@ -50,7 +45,7 @@ const AppLoader = ({ children }: AppLoaderProps) => {
       users.length > 0 &&
       !currentUser
     ) {
-      alert("Account not found. You will be logged out.");
+      toast("Account not found. You will be logged out.");
       dispatch(logOut());
     }
   }, [isLoggedIn, usersStatusLoading, users, currentUser, dispatch]);
